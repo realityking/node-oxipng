@@ -1,0 +1,22 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    commit-message:
+      prefix: "deps"
+      prefix-development: "chore"
+      include: "scope"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "cargo"
+    directory: "/"
+    commit-message:
+      prefix: "deps"
+      prefix-development: "chore"
+      include: "scope"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"

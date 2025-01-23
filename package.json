@@ -46,13 +46,13 @@
     "name": "node-oxipng"
   },
   "dependencies": {
-    "@napi-rs/cli": "^2.18.4",
     "is-png": "^2.0.0"
   },
   "tsd": {
     "directory": "test"
   },
   "devDependencies": {
+    "@napi-rs/cli": "^2.18.4",
     "ava": "^6.2.0",
     "eslint": "^9.18.0",
     "eslint-plugin-ava": "^15.0.1",

@@ -1,0 +1,73 @@
+name: Publish a release
+
+on:
+  push:
+    branches: [ 'release-builder' ]
+  release:
+    types: [published]
+
+permissions: {}
+
+jobs:
+  prebuild:
+    name: Prebuild native module
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            node-architecture: x86
+            rust-target: i686-pc-windows-msvc
+          - os: windows-latest
+            node-architecture: x64
+            rust-target: x86_64-pc-windows-msvc
+          - os: macos-latest
+            node-architecture: arm64
+            rust-target: aarch64-apple-darwin
+          - os: macos-13
+            node-architecture: x64
+            rust-target: x86_64-apple-darwin
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      - name: Use Node.js 18 - ${{ matrix.node-architecture }}
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: 18
+          architecture: ${{ matrix.node-architecture }}
+
+      - name: Use Rust 1.84
+        uses: dtolnay/rust-toolchain@1.84
+        with:
+          targets: ${{ matrix.rust-target }}
+
+      - name: Install dependencies
+        run: npm install --ignore-scripts --no-fund
+
+      - run: npm run build -- --target=${{ matrix.rust-target }}
+
+      - name: Upload prebuilds
+        uses: actions/upload-artifact@v4
+        with:
+          name: prebuild-${{ runner.os }}-${{ matrix.node-architecture }}
+          path: prebuilds
+          retention-days: 1
+
+  assemble:
+    name: Assemble prebuilt binaries
+    needs: [ prebuild ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download prebuilt binaries
+        uses: actions/download-artifact@v4
+
+      - name: Move binaries to one folder
+        run: mkdir prebuilds && cp -rl ./prebuild-*/* ./prebuilds/
+
+      - name: Upload prebuilds
+        uses: actions/upload-artifact@v4
+        with:
+          name: prebuilds
+          path: prebuilds

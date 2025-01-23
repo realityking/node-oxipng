@@ -29,11 +29,10 @@ pub struct OxipngOptions {
 //  pub filters: Option<String>,
 //  pub fastEvaluation: Option<bool>,
 //  pub compressionLevel: Option<u8>,
-//  pub bitReduction: Option<bool>,
-//  pub colorReduction: Option<bool>,
-//  pub paletteReduction: Option<bool>,
-//  pub grayscaleReduction: Option<bool>,
-//  pub noReduction: Option<bool>,
+  pub bitDepthReduction: Option<bool>,
+  pub colorTypeReduction: Option<bool>,
+  pub paletteReduction: Option<bool>,
+  pub grayscaleReduction: Option<bool>,
 //  pub noRecoding: Option<bool>,
 //  pub useZopfli: Option<bool>,
 //  pub fixErrors: Option<bool>,
@@ -64,6 +63,22 @@ fn parseOptions(options: OxipngOptions) -> oxipng::Options {
 
   if let Some(optimize_alpha) = options.optimizeAlpha {
     oxi_opts.optimize_alpha = optimize_alpha;
+  }
+
+  if let Some(bitDepthReduction) = options.bitDepthReduction {
+    oxi_opts.bit_depth_reduction = bitDepthReduction;
+  }
+
+  if let Some(colorTypeReduction) = options.colorTypeReduction {
+    oxi_opts.color_type_reduction = colorTypeReduction;
+  }
+
+  if let Some(paletteReduction) = options.paletteReduction {
+    oxi_opts.palette_reduction = paletteReduction;
+  }
+
+  if let Some(grayscaleReduction) = options.grayscaleReduction {
+    oxi_opts.grayscale_reduction = grayscaleReduction;
   }
 
   if let Some(interlace) = options.interlace {

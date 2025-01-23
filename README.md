@@ -49,10 +49,14 @@ See [Options](#options) for possible values.
 
 ### Options
 
-| Name                | Type       | Default   | Description |
-|---------------------|------------|-----------|---------------------- |
-| `force`             | `boolean`  | `false`   | Write to output even if there was no improvement in compression. |
-| `optimizationLevel` | `integer`  | `2`       | Set the optimization level preset. Valid values are `0` to `6`. The default level 2 is quite fast and provides good compression. Lower levels are faster, higher levels provide better compression, though with increasingly diminishing returns. |
-| `optimizationMax`   | `boolean`  | `false`   | Force the highest optimization level. Overrides `optimizationLevel` |
-| `optimizeAlpha`     | `boolean`  | `false`   | Whether to allow transparent pixels to be altered to improve compression. |
-| `interlace`         | `string`   | `remove`  | Whether to change the interlacing type of the file. Valid values are `remove`, `apply`, and `keep` |
+| Name                 | Type       | Default  | Description |
+|----------------------|------------|----------|---------------------- |
+| `force`              | `boolean`  | `false`  | Write to output even if there was no improvement in compression. |
+| `optimizationLevel`  | `integer`  | `2`      | Set the optimization level preset. Valid values are `0` to `6`. The default level 2 is quite fast and provides good compression. Lower levels are faster, higher levels provide better compression, though with increasingly diminishing returns. |
+| `optimizationMax`    | `boolean`  | `false`  | Force the highest optimization level. Overrides `optimizationLevel` |
+| `optimizeAlpha`      | `boolean`  | `false`  | Whether to allow transparent pixels to be altered to improve compression. |
+| `interlace`          | `string`   | `remove` | Whether to change the interlacing type of the file. Valid values are `remove`, `apply`, and `keep` |
+| `bitDepthReduction`  | `boolean`  | `true`   | Whether to attempt bit depth reduction. |
+| `colorTypeReduction` | `boolean`  | `true`   | Whether to attempt color type reduction. |
+| `paletteReduction`   | `boolean`  | `true`   | Whether to attempt palette reduction. |
+| `grayscaleReduction` | `boolean`  | `true`   | grayscale_reduction. |

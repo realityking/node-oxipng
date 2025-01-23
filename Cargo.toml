@@ -9,7 +9,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 napi = "2"
-napi-derive = "2"
+napi-derive = {default-features=false, version = "2"}
 oxipng = { version = "9.1.3", features = ["parallel", "zopfli", "filetime"], default-features = false }
 
 [build-dependencies]

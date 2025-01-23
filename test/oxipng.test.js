@@ -33,7 +33,6 @@ test('sync: optimize a PNG with max optimizations', async t => {
   t.true(isPng(data))
 })
 
-
 test('sync: add interlacing to a PNG', async t => {
   const buf = await readFile(path.join(__dirname, 'fixtures/large-transparent.png'))
   const originalImage = sharp(buf)

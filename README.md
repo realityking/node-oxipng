@@ -52,7 +52,7 @@ See [Options](#options) for possible values.
 | Name                 | Type       | Default  | Description |
 |----------------------|------------|----------|---------------------- |
 | `force`              | `boolean`  | `false`  | Write to output even if there was no improvement in compression. |
-| `optimizationLevel`  | `integer`  | `2`      | Set the optimization level preset. Valid values are `0` to `6`. The default level 2 is quite fast and provides good compression. Lower levels are faster, higher levels provide better compression, though with increasingly diminishing returns. |
+| `optimizationLevel`  | `number`   | `2`      | Set the optimization level preset. Valid values are `0` to `6`. The default level 2 is quite fast and provides good compression. Lower levels are faster, higher levels provide better compression, though with increasingly diminishing returns. |
 | `optimizationMax`    | `boolean`  | `false`  | Force the highest optimization level. Overrides `optimizationLevel` |
 | `optimizeAlpha`      | `boolean`  | `false`  | Whether to allow transparent pixels to be altered to improve compression. |
 | `interlace`          | `string`   | `remove` | Whether to change the interlacing type of the file. Valid values are `remove`, `apply`, and `keep` |
@@ -67,4 +67,7 @@ See [Options](#options) for possible values.
 | `stripChunks`        | `string[]` | `[]`     | Strip chunks in the list. |
 | `keepChunks`         | `string[]` | ``       | Strip all metadata except chunks in the list. Special value `display` will includes chunks that affect the image appearance. (Same as `stripSafe: true`). |
 | `fastEvaluation`     | `boolean`  | `false`  | Strip safely-removable chunks |
-| `filter`             | `string[]`  | `["None", "Sub", "Entropy", "Bigrams"]` | Which filters try on the image. |
+| `filter`             | `string[]` | `["None", "Sub", "Entropy", "Bigrams"]` | Which filters try on the image. |
+| `compressionLevel`   | `number`   | `11`     | Deflate compression level (0-12) for main compression trials. The levels here are defined by the libdeflate compression library. The default value depends on the optimization level preset. |
+| `useZopfli`          | `boolean`  | `false`  | Use the much slower but stronger Zopfli compressor for main compression trials.  |
+| `zopfliIterations`   | `number`   | `15`     | Set the number of iterations (1-255) to use for Zopfli compression. Using fewer iterations may speed up compression for large files. |

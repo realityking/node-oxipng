@@ -33,6 +33,14 @@ test('sync: optimize a PNG with max optimizations', async t => {
   t.true(isPng(data))
 })
 
+test('sync: optimize a PNG with Zopfli compression', async t => {
+  const buf = await readFile(path.join(__dirname, 'fixtures/test.png'))
+  const data = optimizeOxipngSync(buf, { useZopfli: true })
+
+  t.true(data.length < buf.length)
+  t.true(isPng(data))
+})
+
 test('sync: add interlacing to a PNG', async t => {
   const buf = await readFile(path.join(__dirname, 'fixtures/large-transparent.png'))
   const originalImage = sharp(buf)
@@ -171,6 +179,22 @@ test('async: throws error if option value has wrong type', async t => {
   await t.throwsAsync(optimizeOxipng(buf, { optimizationMax: 123 }), {
     code: 'BooleanExpected',
     message: 'Failed to convert napi value into rust type `bool` on OxipngOptions.optimizationMax'
+  })
+})
+
+test('async: throws error if compressionLevel value is negative', async t => {
+  const buf = await readFile(path.join(__dirname, 'fixtures/test.png'))
+  await t.throwsAsync(optimizeOxipng(buf, { compressionLevel: -1 }), {
+    code: 'GenericFailure',
+    message: 'Failed to convert u32 to u8 on OxipngOptions.compressionLevel'
+  })
+})
+
+test('async: throws error if compressionLevel value is above 12', async t => {
+  const buf = await readFile(path.join(__dirname, 'fixtures/test.png'))
+  await t.throwsAsync(optimizeOxipng(buf, { compressionLevel: 13 }), {
+    code: 'InvalidArg',
+    message: 'value `"compressionLevel"` must be between 0 and 12'
   })
 })
 

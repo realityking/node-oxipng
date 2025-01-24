@@ -35,6 +35,9 @@ export type Options = {
   paletteReduction?: boolean
   grayscaleReduction?: boolean
   idatRecoding?: boolean
+  compressionLevel?: number,
+  useZopfli?: boolean,
+  zopfliIterations?: number,
 }
 
 export function optimizeOxipngSync(input: Uint8Array, options?: Options) : Uint8Array;

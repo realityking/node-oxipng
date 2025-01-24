@@ -65,20 +65,20 @@ fn parseOptions(options: OxipngOptions) -> oxipng::Options {
     oxi_opts.optimize_alpha = optimize_alpha;
   }
 
-  if let Some(bitDepthReduction) = options.bitDepthReduction {
-    oxi_opts.bit_depth_reduction = bitDepthReduction;
+  if let Some(bit_depth_reduction) = options.bitDepthReduction {
+    oxi_opts.bit_depth_reduction = bit_depth_reduction;
   }
 
-  if let Some(colorTypeReduction) = options.colorTypeReduction {
-    oxi_opts.color_type_reduction = colorTypeReduction;
+  if let Some(color_type_reduction) = options.colorTypeReduction {
+    oxi_opts.color_type_reduction = color_type_reduction;
   }
 
-  if let Some(paletteReduction) = options.paletteReduction {
-    oxi_opts.palette_reduction = paletteReduction;
+  if let Some(palette_reduction) = options.paletteReduction {
+    oxi_opts.palette_reduction = palette_reduction;
   }
 
-  if let Some(grayscaleReduction) = options.grayscaleReduction {
-    oxi_opts.grayscale_reduction = grayscaleReduction;
+  if let Some(grayscale_reduction) = options.grayscaleReduction {
+    oxi_opts.grayscale_reduction = grayscale_reduction;
   }
 
   if let Some(scale16) = options.scale16 {

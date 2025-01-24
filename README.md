@@ -59,6 +59,6 @@ See [Options](#options) for possible values.
 | `bitDepthReduction`  | `boolean`  | `true`   | Whether to attempt bit depth reduction. |
 | `colorTypeReduction` | `boolean`  | `true`   | Whether to attempt color type reduction. |
 | `paletteReduction`   | `boolean`  | `true`   | Whether to attempt palette reduction. |
-| `grayscaleReduction` | `boolean`  | `true`   | grayscale_reduction. |
+| `grayscaleReduction` | `boolean`  | `true`   | Whether to attempt grayscale reduction. |
 | `idatRecoding`       | `boolean`  | `true`   | Whether to perform recoding of IDAT and other compressed chunks. If any type of reduction is performed, IDAT recoding will be performed regardless of this setting. |
 | `scale16`            | `boolean`  | `false`  | Whether to forcibly reduce 16-bit to 8-bit by scaling. |

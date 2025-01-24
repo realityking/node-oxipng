@@ -19,10 +19,10 @@ pub struct OxipngOptions {
   pub optimizationLevel: Option<u8>,
   // overrides optimizationLevel
   pub optimizationMax: Option<bool>,
-//  pub stripSafe: Option<bool>,
-//  pub stripAll: Option<bool>,
-//  pub stripChunks: Option<Vec<String>>,
-//  pub keepChunks: Option<Vec<String>>,
+  pub stripSafe: Option<bool>,
+  pub stripAll: Option<bool>,
+  pub stripChunks: Option<Vec<String>>,
+  pub keepChunks: Option<Vec<String>>,
   pub optimizeAlpha: Option<bool>,
   pub interlace: Option<InterlaceMode>,
   pub scale16: Option<bool>,
@@ -40,6 +40,21 @@ pub struct OxipngOptions {
 //  pub timeout: Option<u16>,
 }
 
+const DISPLAY_CHUNKS: [[u8; 4]; 7] = [
+  *b"cICP", *b"iCCP", *b"sRGB", *b"pHYs", *b"acTL", *b"fcTL", *b"fdAT"
+];
+
+const FORBIDDEN_CHUNKS: [[u8; 4]; 5] = [
+  *b"IHDR", *b"IDAT", *b"tRNS", *b"PLTE", *b"IEND"
+];
+
+fn parse_chunk_name(name: &str) -> Result<[u8; 4], String> {
+  name.trim()
+      .as_bytes()
+      .try_into()
+      .map_err(|_| format!("Invalid chunk name {name}"))
+}
+
 fn getBaseOptions (optimizationLevel: Option<u8>, optimizationMax: Option<bool>) -> oxipng::Options {
   if let Some(optMax) = optimizationMax {
     if optMax {
@@ -54,7 +69,7 @@ fn getBaseOptions (optimizationLevel: Option<u8>, optimizationMax: Option<bool>)
   return oxipng::Options::default();
 }
 
-fn parseOptions(options: OxipngOptions) -> oxipng::Options {
+fn parseOptions(options: OxipngOptions) -> napi::Result<oxipng::Options> {
   let mut oxi_opts = getBaseOptions(options.optimizationLevel, options.optimizationMax);
 
   if let Some(force) = options.force {
@@ -103,7 +118,52 @@ fn parseOptions(options: OxipngOptions) -> oxipng::Options {
     }
   }
 
-  return oxi_opts;
+  if let Some(keep_chunks) = options.keepChunks {
+    let mut keep_display = false;
+    let mut names = keep_chunks.iter().filter_map(|name| {
+        if name == "display" {
+          keep_display = true;
+          return None;
+        }
+        Some(parse_chunk_name(name))
+      })
+      .collect::<Result<oxipng::IndexSet<_>, _>>()
+      .map_err(|e| Error::new(Status::GenericFailure, e.to_string()))?;
+
+      if keep_display {
+          names.extend(DISPLAY_CHUNKS.iter().copied());
+      }
+
+      oxi_opts.strip = oxipng::StripChunks::Keep(names);
+  }
+
+  if let Some(strip_chunks) = options.stripChunks {
+    let names = strip_chunks.iter().map(|x| {
+        let name: [u8; 4] = parse_chunk_name(x)?;
+        if FORBIDDEN_CHUNKS.contains(&name) {
+          return Err(format!("{x} chunk is not allowed to be stripped"));
+        }
+        Ok(name)
+      })
+      .collect::<Result<_, _>>()
+      .map_err(|e| Error::new(Status::GenericFailure, e.to_string()))?;
+
+      oxi_opts.strip = oxipng::StripChunks::Strip(names)
+  }
+
+  if let Some(strip_all) = options.stripAll {
+    if strip_all {
+      oxi_opts.strip = oxipng::StripChunks::All;
+    }
+  }
+
+  if let Some(strip_safe) = options.stripSafe {
+    if strip_safe {
+      oxi_opts.strip = oxipng::StripChunks::Safe;
+    }
+  }
+
+  Ok(oxi_opts)
 }
 
 #[napi(
@@ -111,7 +171,7 @@ fn parseOptions(options: OxipngOptions) -> oxipng::Options {
 )]
 pub fn optimize_oxipng_sync(input: Uint8Array, options: OxipngOptions) -> napi::Result<Uint8Array> {
   let data = input.to_vec();
-  let oxi_opts = parseOptions(options);
+  let oxi_opts = parseOptions(options)?;
 
   let result: Vec<u8> = oxipng::optimize_from_memory(&data, &oxi_opts)
     .map_err(|e| Error::new(Status::GenericFailure, e.to_string()))?;
@@ -142,9 +202,9 @@ impl Task for AsyncOxipng {
 #[napi(
   js_name = "optimizeOxipng",
 )]
-pub fn optimize_oxipng(input: Uint8Array, options: OxipngOptions) -> AsyncTask<AsyncOxipng> {
+pub fn optimize_oxipng(input: Uint8Array, options: OxipngOptions) -> napi::Result<AsyncTask<AsyncOxipng>> {
   let data = input.to_vec();
-  let oxi_opts = parseOptions(options);
+  let oxi_opts = parseOptions(options)?;
 
-  AsyncTask::new(AsyncOxipng { data, oxi_opts })
+  Ok(AsyncTask::new(AsyncOxipng { data, oxi_opts }))
 }

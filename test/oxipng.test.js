@@ -144,3 +144,23 @@ test('async: throws error if option value has wrong type', async t => {
     message: 'Failed to convert napi value into rust type `bool` on OxipngOptions.optimizationMax'
   })
 })
+
+test('async: keep exif metadata when requested', async t => {
+  const buf = await readFile(path.join(__dirname, 'fixtures/exif2c08.png'))
+  const originalImage = sharp(buf)
+  const originalMetadata = await originalImage.metadata()
+
+  t.not(originalMetadata.exif, undefined)
+
+  const compressedData = await optimizeOxipng(buf, { keepChunks: ['display'] })
+  const compressedImage = sharp(compressedData)
+  const compressedMetadata = await compressedImage.metadata()
+  t.is(compressedMetadata.exif, undefined)
+
+  const keepChunksData = await optimizeOxipng(buf, { keepChunks: ['display', 'eXIf'] })
+  const keepChunksImage = sharp(keepChunksData)
+  const keepChunksMetadata = await keepChunksImage.metadata()
+
+  t.not(keepChunksMetadata.exif, undefined)
+  t.deepEqual(keepChunksMetadata.exif, originalMetadata.exif)
+})

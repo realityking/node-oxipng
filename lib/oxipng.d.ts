@@ -16,6 +16,10 @@ export type Options = {
   grayscaleReduction?: boolean
   scale16?: boolean
   idatRecording?: boolean
+  stripSafe: boolean,
+  stripAll: boolean,
+  stripChunks: boolean,
+  keepChunks: boolean,
 }
 
 export function optimizeOxipngSync(input: Uint8Array, options?: Options) : Uint8Array;

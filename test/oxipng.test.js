@@ -62,6 +62,35 @@ test('sync: throws error for incorrect interlacing parameter', async t => {
   })
 })
 
+test('sync: apply specific filter', async t => {
+  const buf = await readFile(path.join(__dirname, 'fixtures/large-transparent.png'))
+  const data = optimizeOxipngSync(buf, { filter: ['Paeth'], fastEvaluation: true })
+
+  // Setting a specific filter disables all other filters which hurts compression
+  t.true(data.length === buf.length)
+  t.true(isPng(data))
+})
+
+test('sync: throws error if filter parameter is not array', async t => {
+  const buf = await readFile(path.join(__dirname, 'fixtures/large-transparent.png'))
+  t.throws(() => {
+    optimizeOxipngSync(buf, { filter: 'fake' })
+  }, {
+    code: 'InvalidArg',
+    message: 'Given napi value is not an array on OxipngOptions.filter'
+  })
+})
+
+test('sync: throws error incorrect filter parameter', async t => {
+  const buf = await readFile(path.join(__dirname, 'fixtures/large-transparent.png'))
+  t.throws(() => {
+    optimizeOxipngSync(buf, { filter: ['fake'] })
+  }, {
+    code: 'InvalidArg',
+    message: 'value `"fake"` does not match any variant of enum `Filter` on OxipngOptions.filter'
+  })
+})
+
 test('sync: optimize a PNG with a Uint8Array', async t => {
   const buf = await readFile(path.join(__dirname, 'fixtures/test.png'))
   const data = optimizeOxipngSync(new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength))

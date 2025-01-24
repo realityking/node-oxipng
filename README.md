@@ -64,5 +64,7 @@ See [Options](#options) for possible values.
 | `scale16`            | `boolean`  | `false`  | Whether to forcibly reduce 16-bit to 8-bit by scaling. |
 | `stripSafe`          | `boolean`  | `false`  | Strip safely-removable chunks |
 | `stripAll`           | `boolean`  | `false`  | Strip all non-critical chunks. Will convert APNGs to standard PNGs. |
-| `stripChunks`        | `boolean`  | `string[]`  | Strip chunks in the list. |
-| `keepChunks`         | `boolean`  | `string[]`  | Strip all metadata except chunks in the list. Special value `display` will includes chunks that affect the image appearance. (Same as `stripSafe: true`). |
+| `stripChunks`        | `string[]` | `[]`     | Strip chunks in the list. |
+| `keepChunks`         | `string[]` | ``       | Strip all metadata except chunks in the list. Special value `display` will includes chunks that affect the image appearance. (Same as `stripSafe: true`). |
+| `fastEvaluation`     | `boolean`  | `false`  | Strip safely-removable chunks |
+| `filter`             | `string[]`  | `["None", "Sub", "Entropy", "Bigrams"]` | Which filters try on the image. |

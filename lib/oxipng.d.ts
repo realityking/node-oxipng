@@ -4,6 +4,19 @@ export const enum InterlaceMode {
   keep = 'keep'
 }
 
+export const enum Filter {
+  None = 'None',
+  Sub = 'Sub',
+  Up = 'Up',
+  Average = 'Average',
+  Paeth = 'Paeth',
+  MinSum = 'MinSum',
+  Entropy = 'Entropy',
+  Bigrams = 'Bigrams',
+  BigEnt = 'BigEnt',
+  Brute = 'Brute'
+}
+
 export type Options = {
   force?: boolean
   optimizationLevel?: number
@@ -20,6 +33,8 @@ export type Options = {
   stripAll: boolean,
   stripChunks: boolean,
   keepChunks: boolean,
+  filter?: Array<Filter>,
+  fastEvaluation?: boolean,
 }
 
 export function optimizeOxipngSync(input: Uint8Array, options?: Options) : Uint8Array;

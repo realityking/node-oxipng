@@ -13,6 +13,41 @@ pub enum InterlaceMode {
   keep,
 }
 
+#[napi(string_enum)]
+pub enum Filter {
+  // Standard filter types
+  None,
+  Sub,
+  Up,
+  Average,
+  Paeth,
+  // Heuristic strategies
+  MinSum,
+  Entropy,
+  Bigrams,
+  BigEnt,
+  Brute,
+}
+
+impl TryFrom<Filter> for oxipng::RowFilter {
+  type Error = ();
+
+  fn try_from(value: Filter) -> Result<Self, Self::Error> {
+      match value {
+        Filter::None => Ok(oxipng::RowFilter::None),
+        Filter::Sub => Ok(oxipng::RowFilter::Sub),
+        Filter::Up => Ok(oxipng::RowFilter::Up),
+        Filter::Average => Ok(oxipng::RowFilter::Average),
+        Filter::Paeth => Ok(oxipng::RowFilter::Paeth),
+        Filter::MinSum => Ok(oxipng::RowFilter::MinSum),
+        Filter::Entropy => Ok(oxipng::RowFilter::Entropy),
+        Filter::Bigrams => Ok(oxipng::RowFilter::Bigrams),
+        Filter::BigEnt => Ok(oxipng::RowFilter::BigEnt),
+        Filter::Brute => Ok(oxipng::RowFilter::Brute),
+      }
+  }
+}
+
 #[napi(object)]
 pub struct OxipngOptions {
   pub force: Option<bool>,
@@ -26,17 +61,17 @@ pub struct OxipngOptions {
   pub optimizeAlpha: Option<bool>,
   pub interlace: Option<InterlaceMode>,
   pub scale16: Option<bool>,
-//  pub filters: Option<String>,
-//  pub fastEvaluation: Option<bool>,
-//  pub compressionLevel: Option<u8>,
+  pub filter: Option<Vec<Filter>>,
+  pub fastEvaluation: Option<bool>,
   pub bitDepthReduction: Option<bool>,
   pub colorTypeReduction: Option<bool>,
   pub paletteReduction: Option<bool>,
   pub grayscaleReduction: Option<bool>,
   pub idatRecoding: Option<bool>,
 //  pub useZopfli: Option<bool>,
-//  pub fixErrors: Option<bool>,
 //  pub zopfliIterations: Option<u8>,
+//  pub compressionLevel: Option<u8>,
+//  pub fixErrors: Option<bool>,
 //  pub timeout: Option<u16>,
 }
 
@@ -102,6 +137,17 @@ fn parseOptions(options: OxipngOptions) -> napi::Result<oxipng::Options> {
 
   if let Some(idat_recoding) = options.idatRecoding {
     oxi_opts.idat_recoding = idat_recoding;
+  }
+
+  if let Some(filter) = options.filter {
+    oxi_opts.filter.clear();
+    for f in filter {
+      oxi_opts.filter.insert(f.try_into().unwrap());
+    }
+  }
+
+  if let Some(fast_evaluation) = options.fastEvaluation {
+    oxi_opts.fast_evaluation = fast_evaluation;
   }
 
   if let Some(interlace) = options.interlace {

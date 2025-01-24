@@ -25,7 +25,7 @@ pub struct OxipngOptions {
 //  pub keepChunks: Option<Vec<String>>,
   pub optimizeAlpha: Option<bool>,
   pub interlace: Option<InterlaceMode>,
-//  pub scale16: Option<bool>,
+  pub scale16: Option<bool>,
 //  pub filters: Option<String>,
 //  pub fastEvaluation: Option<bool>,
 //  pub compressionLevel: Option<u8>,
@@ -33,7 +33,7 @@ pub struct OxipngOptions {
   pub colorTypeReduction: Option<bool>,
   pub paletteReduction: Option<bool>,
   pub grayscaleReduction: Option<bool>,
-//  pub noRecoding: Option<bool>,
+  pub idatRecoding: Option<bool>,
 //  pub useZopfli: Option<bool>,
 //  pub fixErrors: Option<bool>,
 //  pub zopfliIterations: Option<u8>,
@@ -79,6 +79,14 @@ fn parseOptions(options: OxipngOptions) -> oxipng::Options {
 
   if let Some(grayscaleReduction) = options.grayscaleReduction {
     oxi_opts.grayscale_reduction = grayscaleReduction;
+  }
+
+  if let Some(scale16) = options.scale16 {
+    oxi_opts.scale_16 = scale16;
+  }
+
+  if let Some(idat_recoding) = options.idatRecoding {
+    oxi_opts.idat_recoding = idat_recoding;
   }
 
   if let Some(interlace) = options.interlace {

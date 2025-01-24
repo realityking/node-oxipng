@@ -21,20 +21,20 @@ export type Options = {
   force?: boolean
   optimizationLevel?: number
   optimizationMax?: boolean
+  stripSafe?: boolean
+  stripAll?: boolean
+  stripChunks?: Array<string>
+  keepChunks?: Array<string>
   optimizeAlpha?: boolean
   interlace?: InterlaceMode
+  scale16?: boolean
+  filter?: Array<Filter>
+  fastEvaluation?: boolean
   bitDepthReduction?: boolean
   colorTypeReduction?: boolean
   paletteReduction?: boolean
   grayscaleReduction?: boolean
-  scale16?: boolean
-  idatRecording?: boolean
-  stripSafe: boolean,
-  stripAll: boolean,
-  stripChunks: boolean,
-  keepChunks: boolean,
-  filter?: Array<Filter>,
-  fastEvaluation?: boolean,
+  idatRecoding?: boolean
 }
 
 export function optimizeOxipngSync(input: Uint8Array, options?: Options) : Uint8Array;

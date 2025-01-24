@@ -15,6 +15,7 @@
     "image",
     "node-addon-api"
   ],
+  "license": "MIT",
   "author": {
     "name": "Rouven Wessling",
     "url": "https://github.com/realityking"

@@ -100,7 +100,7 @@ fn getBaseOptions(optimizationLevel: Option<u8>, optimizationMax: Option<bool>) 
     return oxipng::Options::from_preset(optLevel);
   }
 
-  return oxipng::Options::default();
+  oxipng::Options::default()
 }
 
 fn parseOptions(options: OxipngOptions) -> napi::Result<oxipng::Options> {

@@ -1,6 +1,8 @@
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 
+use std::num::NonZeroU8;
+
 use napi::bindgen_prelude::{AsyncTask, Env, Error, Status, Uint8Array};
 use napi::Task;
 use napi_derive::napi;
@@ -68,9 +70,9 @@ pub struct OxipngOptions {
   pub paletteReduction: Option<bool>,
   pub grayscaleReduction: Option<bool>,
   pub idatRecoding: Option<bool>,
-  //  pub useZopfli: Option<bool>,
-  //  pub zopfliIterations: Option<u8>,
-  //  pub compressionLevel: Option<u8>,
+  pub compressionLevel: Option<u8>,
+  pub useZopfli: Option<bool>,
+  pub zopfliIterations: Option<u8>,
   //  pub fixErrors: Option<bool>,
   //  pub timeout: Option<u16>,
 }
@@ -210,6 +212,34 @@ fn parseOptions(options: OxipngOptions) -> napi::Result<oxipng::Options> {
     if strip_safe {
       oxi_opts.strip = oxipng::StripChunks::Safe;
     }
+  }
+
+  if let Some(use_zopfli) = options.useZopfli {
+    if use_zopfli {
+      let mut iterations = NonZeroU8::new(15).unwrap();
+      if let Some(zopfli_iterations) = options.zopfliIterations {
+        // No need to check for > 255 as that value doesn't fit into a u8
+        if zopfli_iterations < 1 {
+          return Err(Error::new(
+            Status::InvalidArg,
+            "value `\"zopfliIterations\"` must be between 1 and 255",
+          ));
+        }
+        iterations = NonZeroU8::new(zopfli_iterations).unwrap();
+      }
+      oxi_opts.deflate = oxipng::Deflaters::Zopfli { iterations };
+    }
+  }
+
+  if let Some(compression) = options.compressionLevel {
+    // No need to check for < 0> as that value doesn't fit into a u8
+    if compression > 12 {
+      return Err(Error::new(
+        Status::InvalidArg,
+        "value `\"compressionLevel\"` must be between 0 and 12",
+      ));
+    }
+    oxi_opts.deflate = oxipng::Deflaters::Libdeflater { compression };
   }
 
   Ok(oxi_opts)

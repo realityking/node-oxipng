@@ -1,12 +1,12 @@
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 
-use oxipng;
-use napi::bindgen_prelude::{Uint8Array, Error, Status, AsyncTask, Env};
-use napi_derive::napi;
+use napi::bindgen_prelude::{AsyncTask, Env, Error, Status, Uint8Array};
 use napi::Task;
+use napi_derive::napi;
+use oxipng;
 
- #[napi(string_enum)]
+#[napi(string_enum)]
 pub enum InterlaceMode {
   remove,
   apply,
@@ -33,18 +33,18 @@ impl TryFrom<Filter> for oxipng::RowFilter {
   type Error = ();
 
   fn try_from(value: Filter) -> Result<Self, Self::Error> {
-      match value {
-        Filter::None => Ok(oxipng::RowFilter::None),
-        Filter::Sub => Ok(oxipng::RowFilter::Sub),
-        Filter::Up => Ok(oxipng::RowFilter::Up),
-        Filter::Average => Ok(oxipng::RowFilter::Average),
-        Filter::Paeth => Ok(oxipng::RowFilter::Paeth),
-        Filter::MinSum => Ok(oxipng::RowFilter::MinSum),
-        Filter::Entropy => Ok(oxipng::RowFilter::Entropy),
-        Filter::Bigrams => Ok(oxipng::RowFilter::Bigrams),
-        Filter::BigEnt => Ok(oxipng::RowFilter::BigEnt),
-        Filter::Brute => Ok(oxipng::RowFilter::Brute),
-      }
+    match value {
+      Filter::None => Ok(oxipng::RowFilter::None),
+      Filter::Sub => Ok(oxipng::RowFilter::Sub),
+      Filter::Up => Ok(oxipng::RowFilter::Up),
+      Filter::Average => Ok(oxipng::RowFilter::Average),
+      Filter::Paeth => Ok(oxipng::RowFilter::Paeth),
+      Filter::MinSum => Ok(oxipng::RowFilter::MinSum),
+      Filter::Entropy => Ok(oxipng::RowFilter::Entropy),
+      Filter::Bigrams => Ok(oxipng::RowFilter::Bigrams),
+      Filter::BigEnt => Ok(oxipng::RowFilter::BigEnt),
+      Filter::Brute => Ok(oxipng::RowFilter::Brute),
+    }
   }
 }
 
@@ -68,29 +68,28 @@ pub struct OxipngOptions {
   pub paletteReduction: Option<bool>,
   pub grayscaleReduction: Option<bool>,
   pub idatRecoding: Option<bool>,
-//  pub useZopfli: Option<bool>,
-//  pub zopfliIterations: Option<u8>,
-//  pub compressionLevel: Option<u8>,
-//  pub fixErrors: Option<bool>,
-//  pub timeout: Option<u16>,
+  //  pub useZopfli: Option<bool>,
+  //  pub zopfliIterations: Option<u8>,
+  //  pub compressionLevel: Option<u8>,
+  //  pub fixErrors: Option<bool>,
+  //  pub timeout: Option<u16>,
 }
 
 const DISPLAY_CHUNKS: [[u8; 4]; 7] = [
-  *b"cICP", *b"iCCP", *b"sRGB", *b"pHYs", *b"acTL", *b"fcTL", *b"fdAT"
+  *b"cICP", *b"iCCP", *b"sRGB", *b"pHYs", *b"acTL", *b"fcTL", *b"fdAT",
 ];
 
-const FORBIDDEN_CHUNKS: [[u8; 4]; 5] = [
-  *b"IHDR", *b"IDAT", *b"tRNS", *b"PLTE", *b"IEND"
-];
+const FORBIDDEN_CHUNKS: [[u8; 4]; 5] = [*b"IHDR", *b"IDAT", *b"tRNS", *b"PLTE", *b"IEND"];
 
 fn parse_chunk_name(name: &str) -> Result<[u8; 4], String> {
-  name.trim()
-      .as_bytes()
-      .try_into()
-      .map_err(|_| format!("Invalid chunk name {name}"))
+  name
+    .trim()
+    .as_bytes()
+    .try_into()
+    .map_err(|_| format!("Invalid chunk name {name}"))
 }
 
-fn getBaseOptions (optimizationLevel: Option<u8>, optimizationMax: Option<bool>) -> oxipng::Options {
+fn getBaseOptions(optimizationLevel: Option<u8>, optimizationMax: Option<bool>) -> oxipng::Options {
   if let Some(optMax) = optimizationMax {
     if optMax {
       return oxipng::Options::max_compression();
@@ -98,7 +97,7 @@ fn getBaseOptions (optimizationLevel: Option<u8>, optimizationMax: Option<bool>)
   }
 
   if let Some(optLevel) = optimizationLevel {
-    return oxipng::Options::from_preset(optLevel)
+    return oxipng::Options::from_preset(optLevel);
   }
 
   return oxipng::Options::default();
@@ -154,10 +153,10 @@ fn parseOptions(options: OxipngOptions) -> napi::Result<oxipng::Options> {
     match interlace {
       InterlaceMode::remove => {
         oxi_opts.interlace = Some(oxipng::Interlacing::None);
-      },
+      }
       InterlaceMode::apply => {
         oxi_opts.interlace = Some(oxipng::Interlacing::Adam7);
-      },
+      }
       InterlaceMode::keep => {
         oxi_opts.interlace = None;
       }
@@ -166,7 +165,9 @@ fn parseOptions(options: OxipngOptions) -> napi::Result<oxipng::Options> {
 
   if let Some(keep_chunks) = options.keepChunks {
     let mut keep_display = false;
-    let mut names = keep_chunks.iter().filter_map(|name| {
+    let mut names = keep_chunks
+      .iter()
+      .filter_map(|name| {
         if name == "display" {
           keep_display = true;
           return None;
@@ -176,15 +177,17 @@ fn parseOptions(options: OxipngOptions) -> napi::Result<oxipng::Options> {
       .collect::<Result<oxipng::IndexSet<_>, _>>()
       .map_err(|e| Error::new(Status::GenericFailure, e.to_string()))?;
 
-      if keep_display {
-          names.extend(DISPLAY_CHUNKS.iter().copied());
-      }
+    if keep_display {
+      names.extend(DISPLAY_CHUNKS.iter().copied());
+    }
 
-      oxi_opts.strip = oxipng::StripChunks::Keep(names);
+    oxi_opts.strip = oxipng::StripChunks::Keep(names);
   }
 
   if let Some(strip_chunks) = options.stripChunks {
-    let names = strip_chunks.iter().map(|x| {
+    let names = strip_chunks
+      .iter()
+      .map(|x| {
         let name: [u8; 4] = parse_chunk_name(x)?;
         if FORBIDDEN_CHUNKS.contains(&name) {
           return Err(format!("{x} chunk is not allowed to be stripped"));
@@ -194,7 +197,7 @@ fn parseOptions(options: OxipngOptions) -> napi::Result<oxipng::Options> {
       .collect::<Result<_, _>>()
       .map_err(|e| Error::new(Status::GenericFailure, e.to_string()))?;
 
-      oxi_opts.strip = oxipng::StripChunks::Strip(names)
+    oxi_opts.strip = oxipng::StripChunks::Strip(names)
   }
 
   if let Some(strip_all) = options.stripAll {
@@ -212,9 +215,7 @@ fn parseOptions(options: OxipngOptions) -> napi::Result<oxipng::Options> {
   Ok(oxi_opts)
 }
 
-#[napi(
-  js_name = "optimizeOxipngSync",
-)]
+#[napi(js_name = "optimizeOxipngSync")]
 pub fn optimize_oxipng_sync(input: Uint8Array, options: OxipngOptions) -> napi::Result<Uint8Array> {
   let data = input.to_vec();
   let oxi_opts = parseOptions(options)?;
@@ -245,10 +246,11 @@ impl Task for AsyncOxipng {
   }
 }
 
-#[napi(
-  js_name = "optimizeOxipng",
-)]
-pub fn optimize_oxipng(input: Uint8Array, options: OxipngOptions) -> napi::Result<AsyncTask<AsyncOxipng>> {
+#[napi(js_name = "optimizeOxipng")]
+pub fn optimize_oxipng(
+  input: Uint8Array,
+  options: OxipngOptions,
+) -> napi::Result<AsyncTask<AsyncOxipng>> {
   let data = input.to_vec();
   let oxi_opts = parseOptions(options)?;
 

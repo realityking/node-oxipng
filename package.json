@@ -47,7 +47,7 @@
     "name": "node-oxipng"
   },
   "dependencies": {
-    "is-png": "^2.0.0"
+    "is-png": "^3.0.1"
   },
   "devDependencies": {
     "@napi-rs/cli": "^2.18.4",

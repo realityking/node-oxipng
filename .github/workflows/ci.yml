@@ -46,3 +46,12 @@ jobs:
           node-version: 22
       - run: npm install --no-audit --ignore-scripts --no-fund
       - run: npm run lint
+
+  rustfmt:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.2.2
+      - name: Use Rust 1.84
+        uses: dtolnay/rust-toolchain@1.84
+      - run: cargo fmt -- --check

@@ -31,7 +31,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm install --no-fund
       - name: Use Rust 1.84
-        uses: dtolnay/rust-toolchain@1.84
+        uses: dtolnay/rust-toolchain@1.100
       - run: npm run build
       - run: npm test
 
@@ -53,5 +53,5 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4.2.2
       - name: Use Rust 1.84
-        uses: dtolnay/rust-toolchain@1.84
+        uses: dtolnay/rust-toolchain@1.100
       - run: cargo fmt -- --check

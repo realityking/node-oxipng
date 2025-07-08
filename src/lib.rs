@@ -216,7 +216,7 @@ fn parseOptions(options: OxipngOptions) -> napi::Result<oxipng::Options> {
 
   if let Some(use_zopfli) = options.useZopfli {
     if use_zopfli {
-      let mut iterations = NonZeroU8::new(15).unwrap();
+      let mut iterations = nonzero_lit::u8!(15);
       if let Some(zopfli_iterations) = options.zopfliIterations {
         // No need to check for > 255 as that value doesn't fit into a u8
         if zopfli_iterations < 1 {

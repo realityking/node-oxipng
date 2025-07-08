@@ -3,7 +3,6 @@ name = "node-oxipng"
 edition = "2021"
 license = "MIT"
 
-
 [lib]
 crate-type = ["cdylib"]
 
@@ -11,6 +10,7 @@ crate-type = ["cdylib"]
 napi = "2"
 napi-derive = {default-features=false, version = "2"}
 oxipng = { version = "9.1.5", features = ["parallel", "zopfli"], default-features = false }
+nonzero_lit = "0.1.2"
 
 [build-dependencies]
 napi-build = "2"

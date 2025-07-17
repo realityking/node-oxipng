@@ -8,7 +8,7 @@ license = "MIT"
 crate-type = ["cdylib"]
 
 [dependencies]
-napi = "2"
+napi = "3"
 napi-derive = {default-features=false, version = "2"}
 oxipng = { version = "9.1.5", features = ["parallel", "zopfli"], default-features = false }
 
